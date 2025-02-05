@@ -1,0 +1,87 @@
+package com.kardex.application.handler.productHandler;
+
+import com.kardex.application.dto.productDto.ProductPaginated;
+import com.kardex.application.dto.productDto.ProductRequest;
+import com.kardex.application.dto.productDto.ProductResponse;
+import com.kardex.application.dto.productDto.ProductUpdateRequest;
+import com.kardex.application.mapper.ProductMapper;
+import com.kardex.domain.api.IProductServicePort;
+import com.kardex.domain.model.CustomPage;
+import com.kardex.domain.model.Product;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ProductHandler implements IProductHandler{
+
+    private final IProductServicePort productServicePort;
+    private final ProductMapper productMapper;
+    private final IAzureBlobStorageHandler azureBlobStorageHandler;
+
+    @Override
+    public void saveProduct(ProductRequest productRequest, MultipartFile image) {
+        String imageUrl = azureBlobStorageHandler.uploadImage(image);
+
+        Product product = productMapper.toProduct(productRequest);
+        product.setImageUrl(imageUrl);
+        productServicePort.saveProduct(product);
+    }
+
+    @Override
+    public ProductResponse getProduct(Long productId) {
+        Product product = productServicePort.getProduct(productId);
+        return productMapper.toResponse(product);
+    }
+
+    @Override
+    public void updateProduct(Long productId, ProductUpdateRequest productRequest) {
+        Product oldProduct = productServicePort.getProduct(productId);
+        String imageUrl = oldProduct.getImageUrl();
+
+        if (productRequest.getFile() != null && !productRequest.getFile().isEmpty()) {
+            boolean deleted = azureBlobStorageHandler.deleteFileByUrl(imageUrl);
+
+            if (deleted) {
+                imageUrl = azureBlobStorageHandler.uploadImage(productRequest.getFile());
+            }
+        }
+
+        Product updatedProduct = productMapper.toProduct(productRequest);
+        updatedProduct.setImageUrl(imageUrl);
+
+        productServicePort.updateProduct(productId, updatedProduct);
+    }
+
+
+    @Override
+    public void deleteProduct(Long productId) {
+        Product product = productServicePort.getProduct(productId);
+
+        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+            azureBlobStorageHandler.deleteFileByUrl(product.getImageUrl());
+        }
+
+        productServicePort.deleteProduct(productId);
+    }
+
+    @Override
+    public Page<ProductPaginated> getAllProducts(int page, int size, String sortBy, boolean asc) {
+        CustomPage<Product> customPage = productServicePort.getAllProducts(page, size, sortBy, asc);
+
+        List<ProductPaginated> paginatedProducts = customPage.getContent().stream()
+                .map(productMapper::toProductPaginated)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(paginatedProducts, PageRequest.of(customPage.getPageNumber(), customPage.getPageSize()), customPage.getTotalElements());
+    }
+}
