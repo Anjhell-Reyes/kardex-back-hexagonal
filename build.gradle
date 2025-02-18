@@ -21,6 +21,7 @@ dependencies {
 	// Spring Boot Starters
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -51,6 +52,13 @@ dependencies {
 
 	// Azure
 	implementation 'com.azure:azure-storage-blob:12.22.0'
+
+	// Security
+	implementation 'org.springframework.security:spring-security-crypto'
+	implementation 'org.mindrot:jbcrypt:0.4'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 }
 
 tasks.named('test') {

@@ -38,6 +38,11 @@ public class Constants {
     public static final String CORS_ALLOWED_ORIGIN = "http://127.0.0.1:5500";
     public static final String[] CORS_ALLOWED_METHODS = { "GET", "POST", "PUT", "DELETE", "OPTIONS" };
 
+    public static final class Roles {
+        public static final String USER_ROLE = "user";
+        public static final String ADMIN_ROLE = "admin";
+        public static final String SUPPLIER_ROLE = "supplier";
+    }
 
     private Constants() {
 

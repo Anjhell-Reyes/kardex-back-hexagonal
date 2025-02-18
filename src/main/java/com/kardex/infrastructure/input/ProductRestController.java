@@ -89,4 +89,9 @@ public class ProductRestController {
         productHandler.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/Hello")
+    public ResponseEntity<Void> Hello() {
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

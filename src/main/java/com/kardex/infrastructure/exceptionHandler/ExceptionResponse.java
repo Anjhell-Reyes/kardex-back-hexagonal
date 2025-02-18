@@ -12,7 +12,8 @@ public enum ExceptionResponse {
     PAGE_INVALID("Page index must not be less than zero"),
     ERROR_KEY("errors"),
     MISSING_PARAMETER("The required parameter '%s' is missing."),
-    MAX_UPLOAD_SIZE("The file is too large. The maximum size allowed is '%s'.");
+    MAX_UPLOAD_SIZE("The file is too large. The maximum size allowed is '%s'."),
+    EXPIRED_TIME("Your session has expired. Please log in again.");
 
     private String message;
 

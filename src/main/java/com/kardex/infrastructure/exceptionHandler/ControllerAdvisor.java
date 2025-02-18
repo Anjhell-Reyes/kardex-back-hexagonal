@@ -1,6 +1,7 @@
 package com.kardex.infrastructure.exceptionHandler;
 
 import com.kardex.domain.exception.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -96,6 +97,13 @@ public class ControllerAdvisor {
             InvalidPageIndexException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap(MESSAGE, ExceptionResponse.PAGE_INVALID.getMessage()));
+    }
+    
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Map<String, String>> handleExpiredJwtException(
+            ExpiredJwtException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(MESSAGE, ExceptionResponse.EXPIRED_TIME.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
