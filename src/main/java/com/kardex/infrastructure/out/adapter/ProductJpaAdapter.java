@@ -2,6 +2,7 @@ package com.kardex.infrastructure.out.adapter;
 
 import com.kardex.domain.exception.NotDataFoundException;
 import com.kardex.domain.exception.ProductNotFoundException;
+import com.kardex.domain.exception.ProductNotUpdatedException;
 import com.kardex.domain.model.CustomPage;
 import com.kardex.domain.model.Product;
 import com.kardex.domain.spi.IProductPersistencePort;
@@ -35,12 +36,28 @@ public class ProductJpaAdapter implements IProductPersistencePort {
     }
 
     @Override
-    public CustomPage<Product> getAllProducts(int offset, int limit, String sortBy, boolean asc) {
+    public CustomPage<Product> getAllProducts(String userId, int offset, int limit, String sortBy, boolean asc) {
         Sort sort = Sort.by(asc ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(offset / limit, limit, sort);
 
-        Page<ProductEntity> productPage = productRepository.findAll(pageable);
+        // Filtramos por userId
+        Page<ProductEntity> productPage = productRepository.findAllByUserId(userId, pageable);
 
+        return getProductCustomPage(productPage);
+    }
+
+    @Override
+    public CustomPage<Product> getAllProductsByProviderId(String userId,Long providerId, int offset, int limit, String sortBy, boolean asc) {
+        Sort sort = Sort.by(asc ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(offset / limit, limit, sort);
+
+        // Filtramos por userId
+        Page<ProductEntity> productPage = productRepository.findByUserIdAndProviderId(userId, providerId, pageable);
+
+        return getProductCustomPage(productPage);
+    }
+
+    private CustomPage<Product> getProductCustomPage(Page<ProductEntity> productPage) {
         if (productPage.isEmpty()) {
             throw new NotDataFoundException();
         }
@@ -57,6 +74,7 @@ public class ProductJpaAdapter implements IProductPersistencePort {
         );
     }
 
+
     @Override
     public void updateProduct(Product product) {
         productRepository.save(productEntityMapper.toEntity(product));
@@ -65,5 +83,10 @@ public class ProductJpaAdapter implements IProductPersistencePort {
     @Override
     public void deleteProduct(Long productId) {
         productRepository.deleteById(productId);
+    }
+
+    @Override
+    public int updateQuantityProduct(Long productId, Integer newQuantity) {
+        return productRepository.updateQuantity(productId, newQuantity);
     }
 }

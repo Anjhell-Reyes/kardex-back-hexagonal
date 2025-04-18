@@ -23,18 +23,13 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-
-    public boolean isTokenValid(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+    public boolean isTokenValid(String token, String userId) {
+        return (userId.equals(extractUserId(token)) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
@@ -55,13 +50,12 @@ public class JwtService {
         }
     }
 
-    public String extractRole(String token) {
+    public String extractUserId(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
-        return claims.get("role", String.class);
+        return claims.get("id", String.class);
     }
 }

@@ -44,7 +44,7 @@ public class ProductRestController {
     })
     @GetMapping(Constants.PRODUCT_ID_PATH)
     public ResponseEntity<ProductResponse> getProduct(@Parameter(description = "ID of the product to be returned")
-                                                      @PathVariable(name = "productId") Long productId) {
+                                                      @PathVariable Long productId) {
         return ResponseEntity.ok(productHandler.getProduct(productId));
     }
 
@@ -65,6 +65,24 @@ public class ProductRestController {
         return ResponseEntity.ok(products);
     }
 
+    @Operation(summary = "Get paginated list of products by provider")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = Constants.OK, description = "Paged products returned",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = Constants.NOT_FOUND, description = "No data found", content = @Content)
+    })
+    @GetMapping(Constants.PRODUCTS_PROVIDER_PATH)
+    public ResponseEntity<Page<ProductPaginated>> getProductsByProviderId(
+            @RequestParam(defaultValue = Constants.DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = Constants.DEFAULT_SIZE) int size,
+            @RequestParam(defaultValue = Constants.DEFAULT_SORT_BY) String sortBy,
+            @RequestParam(defaultValue = Constants.DEFAULT_ASC) boolean asc,
+            @PathVariable Long providerId) {
+        Page<ProductPaginated> products = productHandler.getAllProductsByProviderId(providerId, page, size, sortBy, asc);
+        return ResponseEntity.ok(products);
+    }
+
     @Operation(summary = "Update an existing product")
     @ApiResponses(value = {
             @ApiResponse(responseCode = Constants.OK, description = "Product updated successfully", content = @Content),
@@ -72,9 +90,22 @@ public class ProductRestController {
     })
     @PutMapping(Constants.PRODUCT_ID_PATH) // Usamos la constante para el ID path
     public ResponseEntity<Void> updateProduct(@Parameter(description = "ID of the product to be updated")
-                                              @PathVariable(name = "productId") Long productId,
+                                              @PathVariable Long productId,
                                               @ModelAttribute ProductUpdateRequest productRequest) {
         productHandler.updateProduct(productId, productRequest);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Update quantity product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = Constants.OK, description = "Product quantity updated successfully", content = @Content),
+            @ApiResponse(responseCode = Constants.NOT_FOUND, description = "Product not found", content = @Content)
+    })
+    @PatchMapping(Constants.PRODUCT_QUANTITY_UPDATE) // Usamos la constante para el ID path
+    public ResponseEntity<Void> updateQuantityProduct(@Parameter(description = "ID of the product to be updated")
+                                              @PathVariable Long productId,
+                                              @RequestParam Integer productQuantity) {
+        productHandler.updateQuantityProduct(productId, productQuantity);
         return ResponseEntity.noContent().build();
     }
 
@@ -84,14 +115,9 @@ public class ProductRestController {
             @ApiResponse(responseCode = Constants.NOT_FOUND, description = "Product not found", content = @Content)
     })
     @DeleteMapping(Constants.PRODUCT_ID_PATH) // Usamos la constante para el ID path
-    public ResponseEntity<Void> deleteProductFromStock(@Parameter(description = "ID of the product to be deleted")
-                                                       @PathVariable(name = "productId") Long productId) {
+    public ResponseEntity<Void> deleteProduct(@Parameter(description = "ID of the product to be deleted")
+                                                       @PathVariable Long productId) {
         productHandler.deleteProduct(productId);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/Hello")
-    public ResponseEntity<Void> Hello() {
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

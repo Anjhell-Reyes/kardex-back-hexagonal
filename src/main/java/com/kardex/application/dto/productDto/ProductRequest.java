@@ -17,10 +17,10 @@ public class ProductRequest {
     @Positive(message = Constants.PRICE_POSITIVE_MESSAGE)
     private Double price;
 
-    @NotNull(message = Constants.STATUS_NOT_NULL_MESSAGE)
-    private String status;
-
     @NotBlank(message = Constants.DESCRIPTION_NOT_BLANK_MESSAGE)
     private String description;
+
+    @NotNull(message = Constants.PROVIDER_NOT_NULL_MESSAGE)
+    private Long providerId;
 
 }

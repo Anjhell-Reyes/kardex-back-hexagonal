@@ -14,11 +14,8 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = true)
-    private Long billId;
-
-    @Column(nullable = true)
-    private Long supplierId;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
     @Column(nullable = false)
     private String name;
@@ -38,6 +35,7 @@ public class ProductEntity {
     @Column(nullable = false)
     private String description;
 
-//    @Column(nullable = false, name = "created_at")
-//    private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "provider_id", referencedColumnName = "id", nullable = false) // Foreign key column in the Article table
+    private ProviderEntity provider;
 }

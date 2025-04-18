@@ -19,4 +19,8 @@ public interface IProductHandler {
     void deleteProduct(Long productId);
 
     Page<ProductPaginated> getAllProducts(int page, int size, String sortBy, boolean asc);
+
+    void updateQuantityProduct(Long productId, Integer productQuantity);
+
+    Page<ProductPaginated> getAllProductsByProviderId(Long providerId, int page, int size, String sortBy, boolean asc);
 }

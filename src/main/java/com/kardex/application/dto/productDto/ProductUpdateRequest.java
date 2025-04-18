@@ -24,6 +24,5 @@ public class ProductUpdateRequest {
 
     private String status;
     private String description;
-
-
+    private Long providerId;
 }

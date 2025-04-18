@@ -1,5 +1,6 @@
 package com.kardex.application.dto.productDto;
 
+import com.kardex.application.dto.providerDto.ProviderSummaryResponse;
 import lombok.Data;
 
 @Data
@@ -11,4 +12,5 @@ public class ProductPaginated {
     private Double price;
     private Boolean status;
     private String description;
+    private ProviderSummaryResponse provider;
 }

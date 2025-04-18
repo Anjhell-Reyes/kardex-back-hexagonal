@@ -8,9 +8,13 @@ public interface IProductPersistencePort {
 
     Product getProduct(Long id);
 
-    CustomPage<Product> getAllProducts(int offset, int limit, String sortBy, boolean asc);
+    CustomPage<Product> getAllProducts(String userId, int offset, int limit, String sortBy, boolean asc);
 
     void updateProduct(Product product);
 
     void deleteProduct(Long productId);
+
+    int updateQuantityProduct(Long productId, Integer newQuantity);
+
+    CustomPage<Product> getAllProductsByProviderId(String userId, Long providerId, int offset, int size, String sortByField, boolean asc);
 }

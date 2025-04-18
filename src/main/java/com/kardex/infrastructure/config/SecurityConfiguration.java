@@ -1,6 +1,5 @@
 package com.kardex.infrastructure.config;
 
-import com.kardex.domain.utils.Constants;
 import com.kardex.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,10 +33,6 @@ public class SecurityConfiguration {
                     // Permitir acceso a H2 Console sin autenticación
                     http.requestMatchers(HttpMethod.GET, "/h2-console/**").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/h2-console/**").permitAll();
-
-                    // Configuración] de seguridad para la API
-                    http.requestMatchers(HttpMethod.POST, "/products/Hello").permitAll();
-                    http.requestMatchers("/products/**").hasAuthority(Constants.Roles.ADMIN_ROLE);
 
                     // Proteger todas las demás rutas
                     http.anyRequest().authenticated();
